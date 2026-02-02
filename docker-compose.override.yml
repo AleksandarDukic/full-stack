@@ -1,0 +1,54 @@
+
+services:
+  eshopdb:
+    container_name: eshopdb-test
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=EShopDb
+    restart: always
+    volumes:
+      - postgres_eshopdb:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  identity:
+    container_name: identity-test
+    # environment:
+    #   - KEYCLOAK_ADMIN=admin
+    #   - KEYCLOAK_ADMIN_PASSWORD=admin
+    #   - KC_DB=postgres
+    #   - KC_DB_URL=jdbc:postgresql://eshopdb/EShopDb?currentSchema=identity
+    #   - KC_DB_USERNAME=postgres
+    #   - KC_DB_PASSWORD=postgres
+    #   - KC_HOSTNAME=keycloak
+    #   - KC_HTTP_PORT=9090
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+
+      KC_DB: postgres
+      KC_DB_URL_HOST: eshopdb
+      KC_DB_URL_DATABASE: EShopDb
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: postgres
+
+      KC_HTTP_PORT: 9090
+      KC_HOSTNAME: keycloak
+      KC_HOSTNAME_ADMN: 
+
+      KC_PROXY: edge
+      KC_HOSTNAME_STRICT: false
+      KC_HTTP_RELATIVE_PATH: /
+
+    depends_on:
+      eshopdb:
+        condition: service_healthy
+    restart: always
+
+    command:
+      - start-dev
+    # ports:
+    #   - '3050:80'

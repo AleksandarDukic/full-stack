@@ -1,0 +1,14 @@
+services:
+  eshopdb:
+    image: postgres
+  identity:
+    image: quay.io/keycloak/keycloak:26.5.2
+  hap:
+    restart: always
+    build:
+      dockerfile: dockerfile
+      context: ./proxy
+    ports:
+      - '3050:80'
+volumes:
+  postgres_eshopdb:
